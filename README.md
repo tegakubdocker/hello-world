@@ -169,11 +169,45 @@ www.rvm.io
 \curl -sSL https://get.rvm.io | bash -s stable --rails
 ```
 
-### Create a Hello-worls rails application
+### Create a Hello-world rails application
 
 1. creating rails hello world application on project directory everlyasagba
 ```sh
 rails new hello-world
 ```
-2. 
+2. dockerize the rails application and create a dockerfile
+3. create a .dockerignore in the same directory
+4. Build the docker image 
+```sh
+docker build -t hello-world .
+```
+5. create the helm charts
+```sh
+helm create hello-world
+```
+6. create a new file in the templates directory called hello-world.yaml and configure this file accordingly to define any deployment and service for the rails application.
+
+7. tag the docker image. note docker username is tegafreshest
+```sh
+docker tag hello-world:latest tegafreshest/hello-world:1.0.0
+```
+8. push docker image to docker hub. note docker username is tegafreshest
+```sh
+docker push tegafreshest/hello-world:1.0.0
+```
+9. deploy the rails application to the cluster using helm
+```sh
+helm install hello-world ./hello-world --namespace everlyhealth
+```
+10. verify the deployment 
+```sh
+kubectl get all -n dev
+```
+11. setup port fowarding
+```sh
+kubectl --namespace everlyhealth port-forward svc/hello-world 3000:80
+```
+
+
+
 
