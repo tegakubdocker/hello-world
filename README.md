@@ -82,6 +82,21 @@ kubectl port-forward service/argocd-server -n everlyhealth 8080:443
 ```sh
 kubectl -n everlyhealth get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
+# Gitea service in everyhealth cluster
+
+1. Add gitea help repo
+```sh
+helm repo add gitea-charts https://dl.gitea.io/charts/
+```
+
+2. Install gitea in everlyhealth
+```sh
+helm install gitea gitea-charts/gitea --namespace everlyhealth
+```
+3. Setup port fowarding to reflect service config in ingress.yaml
+```sh
+ kubectl --namespace everlyhealth port-forward svc/gitea-http 3000:3000
+ ```
 
 
 ## Installation
@@ -203,9 +218,41 @@ helm install hello-world ./hello-world --namespace everlyhealth
 ```sh
 kubectl get all -n dev
 ```
-11. setup port fowarding
+11. Get pod name for hello-world
+```sh
+kubectl get pods --namespace everlyhealth
+```
+12. export the pod name
+```sh
+export POD_NAME=hello-world-f9795b545-gztv7
+```
+13. Export container port
+```sh
+export CONTAINER_PORT=$(kubectl get pod --namespace everlyhealth $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+```
+
+14. setup port fowarding
 ```sh
 kubectl --namespace everlyhealth port-forward svc/hello-world 3000:80
+```
+15. access the app on 
+```sh
+127.0.0.1:3000
+```
+
+### Access Logs from ingress controller while accessing service
+
+1. find the ingress controller pod name.
+```sh
+kubectl get pods -n everlyhealth
+```
+2. get ingress controller name set in ingress.yaml
+```sh
+kubectl get ingress -n everlyhealth
+```
+3. display logs from the ingress controller pod. using ArgoCd server pod
+```sh
+kubectl logs -n everlyhealth argocd-server-645c6ffcd8-zzfn2 
 ```
 
 
